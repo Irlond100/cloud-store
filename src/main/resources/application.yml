@@ -1,0 +1,7 @@
+spring.datasource:
+  url: jdbc:postgresql://localhost:5432/postgres
+  username: postgres
+  password: admin
+
+app:
+  secret-key: tmNDKSlBzap3CxsSg0yYffBHF0t8CgnwxZiqI+WBUBPc0kineRBj8jFLI08hNCCj0MmnZq7hIhZaUCjd5Zr0QkjkMKooiOIOIOIKLK
