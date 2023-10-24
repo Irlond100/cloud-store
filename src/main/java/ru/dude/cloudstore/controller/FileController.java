@@ -9,20 +9,23 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.dude.cloudstore.dto.ErrorResponse;
+import ru.dude.cloudstore.dto.FileRenameRequest;
 import ru.dude.cloudstore.dto.FileRequest;
 import ru.dude.cloudstore.dto.FileUploadRequest;
 import ru.dude.cloudstore.model.FileResponse;
 import ru.dude.cloudstore.service.FileServiceImpl;
 
 import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
 @RestController
@@ -31,28 +34,45 @@ import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 public class FileController {
 
     private final FileServiceImpl fileServiceImpl;
+    private final Map<String, Resource> oneTimeLinks = new HashMap<>();
 
+    @Operation(description = "Download file from cloud")
+    @ApiResponse(responseCode = "200", description = "Success deleted",
+            content = @Content(mediaType = TEXT_PLAIN_VALUE))
+    @ApiResponse(responseCode = "400", description = "Error input data.",
+            content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "401", description = "Unauthorized error.",
+            content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "500", description = "Error delete file",
+            content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorResponse.class)))
 
     @AuthTokenParameter
-    @GetMapping("/files")
-    public List<String> getFiles() throws IOException {
-        Path folder = Paths.get("src/main/resources/files");
-        ArrayList<String> files = new ArrayList<>();
-        if (Files.exists(folder) && Files.isDirectory(folder)) {
-            Files.walkFileTree(folder, new SimpleFileVisitor<>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    files.add(file.getFileName().toString());
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        }
-        return files;
+    @GetMapping("/file")
+    public ResponseEntity<String> getFileLinkKey(
+            @Parameter(description = "Name of the file to generate one-time download link for")
+            @RequestParam @Valid @NotEmpty @NotBlank String filename) throws IOException {
+        final var fileRequest = new FileRequest(filename);
+        final var fileResource = fileServiceImpl.getFileResource(fileRequest);
+        String linkKey = generateRandomLinkKey();
+        oneTimeLinks.put(linkKey, fileResource);
+        return ResponseEntity.ok().body(linkKey);
     }
 
     @Operation(description = "Deletes a file")
-    @ApiResponse(responseCode = "200", description = "'Delete operation' success message",
+    @ApiResponse(responseCode = "200", description = "Success deleted",
             content = @Content(mediaType = TEXT_PLAIN_VALUE))
+    @ApiResponse(responseCode = "400", description = "Error input data.",
+            content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "401", description = "Unauthorized error.",
+            content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "500", description = "Error delete file",
+            content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorResponse.class)))
 
     @AuthTokenParameter
     @DeleteMapping("/file")
@@ -62,8 +82,14 @@ public class FileController {
     }
 
     @Operation(description = "Uploads a file")
-    @ApiResponse(responseCode = "200", description = "Upload operation success message",
+    @ApiResponse(responseCode = "200", description = "Success upload",
             content = @Content(mediaType = TEXT_PLAIN_VALUE))
+    @ApiResponse(responseCode = "400", description = "Error input data.",
+            content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "401", description = "Unauthorized error.",
+            content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorResponse.class)))
 
     @AuthTokenParameter
     @PostMapping("file")
@@ -72,14 +98,57 @@ public class FileController {
         return fileServiceImpl.upload(fileUploadRequest);
     }
 
-    @Operation(description = "Returns list of uploaded files up to specified limit")
-    @ApiResponse(responseCode = "200", description = "List of file-info",
-            content = @Content(mediaType = "application/json"))
+    @Operation(description = "Get all files")
+    @ApiResponse(responseCode = "200", description = "Success deleted",
+            content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "400", description = "Error input data.",
+            content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "401", description = "Unauthorized error.",
+            content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "500", description = "Error delete file",
+            content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorResponse.class)))
 
     @AuthTokenParameter
     @GetMapping("list")
     public List<FileResponse> limitListUploaded(
             @RequestParam("limit") @Min(1) @Valid int limit) throws RuntimeException, IOException {
         return fileServiceImpl.getFileInfoList(limit);
+    }
+
+    @Operation(description = "Edit file name")
+    @ApiResponse(responseCode = "200", description = "Success deleted",
+            content = @Content(mediaType = TEXT_PLAIN_VALUE))
+    @ApiResponse(responseCode = "400", description = "Error input data.",
+            content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "401", description = "Unauthorized error.",
+            content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "500", description = "Error delete file",
+            content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorResponse.class)))
+
+    @AuthTokenParameter
+    @PutMapping("/file")
+    public String handleFileRename(
+            @Parameter(description = "Filename to rename", required = true)
+            @RequestParam @Valid @NotEmpty @NotBlank String filename,
+            @Parameter(description = "New filename", required = true)
+            @RequestBody @Valid @NotNull FileRequest fileRequest
+    ) throws IOException {
+        final var fileRenameRequest = new FileRenameRequest();
+        fileRenameRequest.setNewFilename(fileRequest.getFilename());
+        fileRenameRequest.setToUpdateFilename(filename);
+        return fileServiceImpl.renameFile(fileRenameRequest);
+    }
+
+    public static String generateRandomLinkKey() {
+        byte[] randomBytes = new byte[16];
+        new Random().nextBytes(randomBytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
     }
 }

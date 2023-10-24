@@ -18,7 +18,7 @@ import java.io.File;
 
 @Slf4j
 @Repository
-public class FileSystemStorage implements FileRepository {
+public class FileSystemStorage implements FileStore {
 
     private final Path storagePath;
 
@@ -72,22 +72,21 @@ public class FileSystemStorage implements FileRepository {
                 filename);
     }
 
-//    @Override
-//    public Resource loadAsResource(String username, String filename) throws IOException {
-//        final var filePath = getFilePath(username, filename);
-//        return new UrlResource(filePath.toUri());
-//    }
+    @Override
+    public void updateFile(String username, String toUpdateFilename, String newFileName) throws IOException {
+        final var toUpdateFilePath = getFilePath(username, toUpdateFilename);
+        final var newFilePath = getIfExistUserFolderPath(username).resolve(newFileName);
+        Files.move(toUpdateFilePath, newFilePath);
+        log.info("User '{}' change filename '{}' to '{}'",
+                username,
+                toUpdateFilename,
+                newFileName);
+    }
 
-//    @Override
-//    public void updateFile(String username, String toUpdateFilename, String newFileName) throws IOException {
-//        final var toUpdateFilePath = getFilePath(username, toUpdateFilename);
-//        final var newFilePath = getIfExistUserFolderPath(username).resolve(newFileName);
-//        Files.move(toUpdateFilePath, newFilePath);
-//        log.info("User '{}' change filename '{}' to '{}'",
-//                username,
-//                toUpdateFilename,
-//                newFileName);
-//    }
+    public Resource loadAsResource(String username, String filename) throws IOException {
+        final var filePath = getFilePath(username, filename);
+        return new UrlResource(filePath.toUri());
+    }
 
     private Path initFolder(Path folderName) throws IOException {
         return Files.createDirectories(folderName);

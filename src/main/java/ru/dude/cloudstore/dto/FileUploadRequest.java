@@ -17,10 +17,4 @@ public class FileUploadRequest {
     @NotNull
     MultipartFile file;
 
-//    public void setFile(MultipartFile file) {
-//        if (file.isEmpty()) {
-//            throw new IllegalArgumentException("File content must not be empty");
-//        }
-//        this.file = file;
-//    }
 }
