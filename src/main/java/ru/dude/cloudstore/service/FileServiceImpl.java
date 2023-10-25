@@ -23,10 +23,9 @@ public class FileServiceImpl implements FileService<FileResponse, FileRequest,Fi
     private final FileSystemStorage fileSystemStorage;
 
     @Override
-    public String upload(FileUploadRequest fileUploadRequest) throws RuntimeException, IOException {
+    public void upload(FileUploadRequest fileUploadRequest, String filename) throws RuntimeException, IOException {
         final var currentUsername = getCurrentUserName();
-        fileSystemStorage.store(currentUsername, fileUploadRequest.getFilename(), fileUploadRequest.getFile().getBytes());
-        return successMessage.getUploadMessage();
+        fileSystemStorage.store(currentUsername, filename, fileUploadRequest.getFile().getBytes());
     }
 
     @Override
@@ -38,7 +37,7 @@ public class FileServiceImpl implements FileService<FileResponse, FileRequest,Fi
     @Override
     public String deleteFile(FileRequest fileRequest) throws RuntimeException, IOException {
         final var currentUsername = getCurrentUserName();
-        fileSystemStorage.delete(currentUsername, fileRequest.getFilename());
+        fileSystemStorage.delete(currentUsername, fileRequest.getName());
         return successMessage.getDeleteMessage();
     }
 
@@ -56,7 +55,7 @@ public class FileServiceImpl implements FileService<FileResponse, FileRequest,Fi
     @Override
     public Resource getFileResource(FileRequest fileRequest) throws IOException {
         final var currentUsername = getCurrentUserName();
-            return fileSystemStorage.loadAsResource(currentUsername, fileRequest.getFilename());
+            return fileSystemStorage.loadAsResource(currentUsername, fileRequest.getName());
     }
 
     private String getCurrentUserName() {

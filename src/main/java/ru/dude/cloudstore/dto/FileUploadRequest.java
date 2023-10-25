@@ -13,8 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class FileUploadRequest {
     @NotEmpty
-    String filename;
+    String hash;
     @NotNull
     MultipartFile file;
-
 }

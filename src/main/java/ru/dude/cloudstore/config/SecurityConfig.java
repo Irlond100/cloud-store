@@ -27,7 +27,6 @@ import ru.dude.cloudstore.security.JwtFilter;
 @RequiredArgsConstructor
 @EnableWebSecurity
 @EnableWebMvc
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig implements WebMvcConfigurer {
 
     private final JwtFilter jwtFilter;

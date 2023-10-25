@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import ru.dude.cloudstore.model.FileResponse;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class FileSystemStorage implements FileStore {
                         BasicFileAttributes attributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
                         var formatter = new SimpleDateFormat("yyy-MM-dd");
                         String creationDate = formatter.format(new Date(file.lastModified()));
-                        return new FileResponse(file.getName(), file.length(), creationDate);
+                        return new FileResponse(file.getName(), attributes.size(), creationDate);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -82,7 +83,7 @@ public class FileSystemStorage implements FileStore {
                 toUpdateFilename,
                 newFileName);
     }
-
+    @Override
     public Resource loadAsResource(String username, String filename) throws IOException {
         final var filePath = getFilePath(username, filename);
         return new UrlResource(filePath.toUri());

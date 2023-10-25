@@ -23,34 +23,34 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//public class AuthControllerTest {
-//    private static AuthWithJWTService mockAuthWithJWTService;
-//    private static MockMvc mockMvc;
-//    private static ObjectMapper objectMapper;
-//
-//    @BeforeAll
-//    public static void setup() {
-//        mockAuthWithJWTService = Mockito.mock(AuthWithJWTService.class);
-//        mockMvc = MockMvcBuilders.standaloneSetup(new AuthController(mockAuthWithJWTService)).build();
-//        objectMapper = new ObjectMapper();
-//    }
-//
-//    @Test
-//    public void loginSuccess() throws Exception {
-//        // Arrange
-//        final var authRequest = new AuthRequest(TEST_USERNAME, TEST_PASSWORD);
-//        final var tokenResponse = new TokenResponse(TEST_JWT);
-//        when(mockAuthWithJWTService.login(any(AuthRequest.class))).thenReturn(tokenResponse);
-//        // Act
-//        final var resultActions = mockMvc.perform(post("/login")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(authRequest)));
-//        // Assert
-//        resultActions.andExpect(status().isOk())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath(HeaderNameHolder.TOKEN_HEADER_NAME).value(TEST_JWT));
-//
-//        verify(mockAuthWithJWTService).login(authRequest);
-//    }
-//
-//}
+public class AuthControllerTest {
+    private static AuthWithJWTService mockAuthWithJWTService;
+    private static MockMvc mockMvc;
+    private static ObjectMapper objectMapper;
+
+    @BeforeAll
+    public static void setup() {
+        mockAuthWithJWTService = Mockito.mock(AuthWithJWTService.class);
+        mockMvc = MockMvcBuilders.standaloneSetup(new AuthController(mockAuthWithJWTService)).build();
+        objectMapper = new ObjectMapper();
+    }
+
+    @Test
+    public void loginSuccess() throws Exception {
+        // Arrange
+        final var authRequest = new AuthRequest(TEST_USERNAME, TEST_PASSWORD);
+        final var tokenResponse = new TokenResponse(TEST_JWT);
+        when(mockAuthWithJWTService.login(any(AuthRequest.class))).thenReturn(tokenResponse);
+        // Act
+        final var resultActions = mockMvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(authRequest)));
+        // Assert
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath(HeaderNameHolder.TOKEN_HEADER_NAME).value(TEST_JWT));
+
+        verify(mockAuthWithJWTService).login(authRequest);
+    }
+
+}

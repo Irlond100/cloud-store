@@ -5,3 +5,10 @@ spring.datasource:
 
 app:
   secret-key: tmNDKSlBzap3CxsSg0yYffBHF0t8CgnwxZiqI+WBUBPc0kineRBj8jFLI08hNCCj0MmnZq7hIhZaUCjd5Zr0QkjkMKooiOIOIOIKLK
+
+spring:
+  http:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 50MB

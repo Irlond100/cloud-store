@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-//@Schema(name = "credentials", description = "login: Contains non-empty login validated by the @Email constraint. <br>" +
-//        "password:  must be at least 4 characters and contain at least one digit and one uppercase letter ")
 public class AuthRequest {
     @NotEmpty
     @JsonProperty(HeaderNameHolder.USER_HEADER_NAME)

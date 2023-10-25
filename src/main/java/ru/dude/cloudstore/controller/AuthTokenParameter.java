@@ -14,7 +14,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Parameter(in = ParameterIn.HEADER,
         name = HeaderNameHolder.TOKEN_HEADER_NAME,
-//        schema = @Schema(name = "string"),
         description = "Unique JWT access token")
 
 public @interface AuthTokenParameter {

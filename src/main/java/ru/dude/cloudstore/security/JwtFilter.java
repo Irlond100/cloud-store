@@ -59,7 +59,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
     public String getJwt(HttpServletRequest request) throws SignatureException {
         String authHeader = request.getHeader(HeaderNameHolder.TOKEN_HEADER_NAME);
-        return authHeader;
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        } else {
+            throw new SignatureException("wrong jwt is passed");
+        }
     }
 
 

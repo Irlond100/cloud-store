@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -92,16 +93,18 @@ public class FileController {
                     schema = @Schema(implementation = ErrorResponse.class)))
 
     @AuthTokenParameter
-    @PostMapping("file")
-    public String handleFileUpload(
-            @ModelAttribute @Valid FileUploadRequest fileUploadRequest) throws RuntimeException, IOException {
-        return fileServiceImpl.upload(fileUploadRequest);
+    @PostMapping(path = "/file", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public void handleFileUpload(
+            @Parameter(description = "Filename to rename", required = true)
+            @RequestParam @Valid @NotEmpty @NotBlank String filename,
+            FileUploadRequest fileUploadRequest) throws RuntimeException, IOException {
+        fileServiceImpl.upload(fileUploadRequest, filename);
     }
 
     @Operation(description = "Get all files")
     @ApiResponse(responseCode = "200", description = "Success deleted",
             content = @Content(mediaType = APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = ErrorResponse.class)))
+                    schema = @Schema(implementation = FileResponse.class)))
     @ApiResponse(responseCode = "400", description = "Error input data.",
             content = @Content(mediaType = APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = ErrorResponse.class)))
@@ -113,7 +116,7 @@ public class FileController {
                     schema = @Schema(implementation = ErrorResponse.class)))
 
     @AuthTokenParameter
-    @GetMapping("list")
+    @GetMapping("/list")
     public List<FileResponse> limitListUploaded(
             @RequestParam("limit") @Min(1) @Valid int limit) throws RuntimeException, IOException {
         return fileServiceImpl.getFileInfoList(limit);
@@ -141,7 +144,7 @@ public class FileController {
             @RequestBody @Valid @NotNull FileRequest fileRequest
     ) throws IOException {
         final var fileRenameRequest = new FileRenameRequest();
-        fileRenameRequest.setNewFilename(fileRequest.getFilename());
+        fileRenameRequest.setNewFilename(fileRequest.getName());
         fileRenameRequest.setToUpdateFilename(filename);
         return fileServiceImpl.renameFile(fileRenameRequest);
     }
