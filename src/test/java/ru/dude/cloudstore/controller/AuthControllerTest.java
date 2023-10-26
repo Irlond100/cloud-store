@@ -1,6 +1,7 @@
 package ru.dude.cloudstore.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.ClassRule;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -8,7 +9,9 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.testcontainers.containers.PostgreSQLContainer;
 import ru.dude.cloudstore.dto.AuthRequest;
 import ru.dude.cloudstore.dto.HeaderNameHolder;
 import ru.dude.cloudstore.model.TokenResponse;
@@ -37,20 +40,23 @@ public class AuthControllerTest {
 
     @Test
     public void loginSuccess() throws Exception {
-        // Arrange
         final var authRequest = new AuthRequest(TEST_USERNAME, TEST_PASSWORD);
         final var tokenResponse = new TokenResponse(TEST_JWT);
         when(mockAuthWithJWTService.login(any(AuthRequest.class))).thenReturn(tokenResponse);
-        // Act
         final var resultActions = mockMvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(authRequest)));
-        // Assert
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath(HeaderNameHolder.TOKEN_HEADER_NAME).value(TEST_JWT));
 
         verify(mockAuthWithJWTService).login(authRequest);
     }
+
+    @ClassRule
+    public static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:11.1")
+            .withDatabaseName("integration-tests-db")
+            .withUsername("sa")
+            .withPassword("sa");
 
 }

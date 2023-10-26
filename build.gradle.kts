@@ -22,13 +22,17 @@ repositories {
 }
 
 dependencies {
-    implementation ("javax.xml.bind:jaxb-api:2.3.1")
+    implementation("javax.xml.bind:jaxb-api:2.3.1")
     implementation("io.jsonwebtoken:jjwt:0.2")
+    implementation("org.liquibase:liquibase-core")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
+
+    testImplementation("org.testcontainers:postgresql:1.19.1")
+    testImplementation("org.testcontainers:testcontainers:1.16.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     implementation(group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version = "2.1.0")
