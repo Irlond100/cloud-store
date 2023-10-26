@@ -4,16 +4,18 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.api.ErrorMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.dude.cloudstore.dto.AuthRequest;
+import ru.dude.cloudstore.entities.User;
 import ru.dude.cloudstore.model.TokenResponse;
+import ru.dude.cloudstore.repository.UserEntityRepository;
 
 import java.util.Date;
 
@@ -21,20 +23,20 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Data
 public class AuthWithJWTService {
-    private final UserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
+    private final UserEntityRepository userEntityRepository;
 
     @Value("${app.secret-key}")
     private String secretKey;
 
     public TokenResponse login(AuthRequest authRequest) throws RuntimeException {
-        UserDetails userDetails;
+        User user;
         try {
-            userDetails = userDetailsService.loadUserByUsername(getUsernameEncoded(authRequest.getUsername()));
-            final var userEncodedPassword = userDetails.getPassword();
+            user = loadUserByUsername(getUsernameEncoded(authRequest.getUsername()));
+            final var userEncodedPassword = user.getPassword();
             final var authRequestPassword = authRequest.getPassword();
-            PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-            if (encoder.matches(authRequestPassword, userEncodedPassword)) {
-                final var jwt = generateJwt(userDetails);
+            if (passwordEncoder.matches(authRequestPassword, userEncodedPassword)) {
+                final var jwt = generateJwt(user);
                 return new TokenResponse(jwt);
             } else {
                 throw new BadCredentialsException("bad");
@@ -62,4 +64,8 @@ public class AuthWithJWTService {
                 .compact();
     }
 
+    public User loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userEntityRepository.findByUsername(username)
+                .orElseThrow();
+    }
 }
