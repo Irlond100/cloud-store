@@ -12,3 +12,14 @@ spring:
       enabled: true
       max-file-size: 50MB
       max-request-size: 50MB
+
+  liquibase:
+    change-log: classpath:db.changelog/master.yaml
+    url: jdbc:postgresql://localhost:5432/postgres
+    password: postgres
+    user: admin
+    enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
