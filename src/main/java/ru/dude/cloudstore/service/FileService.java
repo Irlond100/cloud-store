@@ -11,9 +11,9 @@ public interface FileService<FileResponse, FileRequest, FileRenameRequest, FileU
 
     List<FileResponse> getFileInfoList(int limit) throws IOException;
 
-    String deleteFile(FileRequest fileRequest) throws RuntimeException, IOException;
+    void deleteFile(FileRequest fileRequest) throws RuntimeException, IOException;
 
     Resource getFileResource(FileRequest fileRequest) throws IOException;
 
-    String renameFile(FileRenameRequest fileRenameRequest) throws RuntimeException, IOException;
+    void renameFile(FileRenameRequest fileRenameRequest) throws RuntimeException, IOException;
 }

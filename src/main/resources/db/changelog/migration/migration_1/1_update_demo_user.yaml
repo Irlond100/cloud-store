@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: update-demo_user
+      author: Alexandr
+      changes:
+        - update:
+            tableName: _user
+            columns:
+              - column:
+                  name: password
+                  value: $2a$12$0D0RyLm.RS0ZGSnerUAp5.T5Xpp60NCMMsC0LQu1eB4erR4Q3TvP.
+            where:  login='user'
+#
+#  - changeSet:
+#      id: update-demo_user.1
+#      author: Alexandr
+#      changes:
+#        - update:
+#            tableName: _user
+#            columns:
+#              - column:
+#                  name: password
+#                  value: $2a$12$0D0RyLm.RS0ZGSnerUAp5.T5Xpp60NCMMsC0LQu1eB4erR4Q3TvP.
+#            where: login='user'

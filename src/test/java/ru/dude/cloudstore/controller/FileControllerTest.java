@@ -57,31 +57,23 @@ public class FileControllerTest {
 
     @Test
     public void deleteSuccess() throws Exception {
-        // Arrange
-        when(mockFileServiceImpl.deleteFile(eq(fileRequest))).thenReturn(TEST_SUCCESS_MESSAGE);
-        // Act
         final var resultActions = mockMvc.perform(delete("/file")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("filename", TEST_FILE_NAME));
-        // Assert
         resultActions
-                .andExpect(status().isOk())
-                .andExpect(content().string(TEST_SUCCESS_MESSAGE));
+                .andExpect(status().isOk());
         verify(mockFileServiceImpl, times(1)).deleteFile(fileRequest);
         verifyNoMoreInteractions(mockFileServiceImpl);
     }
 
     @Test
     public void downloadByLinkKeySuccess() throws Exception {
-        // Arrange
         final Resource resource = Mockito.mock(Resource.class);
         when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(TEST_FILE_CONTENT.getBytes()));
         when(mockFileServiceImpl.getFileResource(fileRequest)).thenReturn(resource);
-        // Act
         final var resultActions = mockMvc.perform(get("/file")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("filename", TEST_FILE_NAME));
-        // Assert
         resultActions
                 .andExpect(status().isOk());
         verify(mockFileServiceImpl, times(1)).getFileResource(fileRequest);
@@ -92,20 +84,15 @@ public class FileControllerTest {
     @Test
     public void handleFileRenameSuccess() throws Exception {
         final var renamedFileRequest = new FileRequest(TEST_FILE_RENAMED_NAME);
-        // Arrange
         final var fileRenameRequest = new FileRenameRequest();
         fileRenameRequest.setToUpdateFilename(TEST_FILE_NAME);
         fileRenameRequest.setNewFilename(renamedFileRequest.getName());
-        when(mockFileServiceImpl.renameFile(fileRenameRequest)).thenReturn(TEST_SUCCESS_MESSAGE);
-        // Act
         final var resultActions = mockMvc.perform(put("/file")
                 .param("filename", TEST_FILE_NAME)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(renamedFileRequest)));
-        // Assert
         resultActions
-                .andExpect(status().isOk())
-                .andExpect(content().string(TEST_SUCCESS_MESSAGE));
+                .andExpect(status().isOk());
         verify(mockFileServiceImpl, times(1)).renameFile(fileRenameRequest);
         verifyNoMoreInteractions(mockFileServiceImpl);
     }

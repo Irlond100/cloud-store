@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-demo_user
+      author: Alexandr
+      changes:
+        - insert:
+            tableName: _user
+            columns:
+              - column:
+                  name: login
+                  value: user
+              - column:
+                  name: password
+                  value: $2a$12$6r5mlpxt6UMXVi1Ucfti8e33rA69UJVUu//aqU2.S7PSsxUzWQIAi

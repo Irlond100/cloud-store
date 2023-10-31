@@ -1,4 +1,5 @@
 databaseChangeLog:
   - includeAll:
-      path: db/changelog/migration
-
+      path: db/changelog/migration/init
+  - includeAll:
+      path: db/changelog/migration/migration_1

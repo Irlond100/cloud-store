@@ -15,7 +15,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
     @Column(name = "login", unique = true)
     @Size(min = 2, max = 50, message = "Username length must be in between 2 and 50 symbols")
     private String username;

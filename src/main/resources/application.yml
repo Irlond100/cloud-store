@@ -5,6 +5,10 @@ spring.datasource:
 
 app:
   secret-key: tmNDKSlBzap3CxsSg0yYffBHF0t8CgnwxZiqI+WBUBPc0kineRBj8jFLI08hNCCj0MmnZq7hIhZaUCjd5Zr0QkjkMKooiOIOIOIKLK
+  web:
+    security:
+      public: /login,/openapi.yaml,/swagger-ui/**,/v3/api-docs/**
+
 
 spring:
   http:
@@ -14,10 +18,10 @@ spring:
       max-request-size: 50MB
 
   liquibase:
-    change-log: classpath:db.changelog/master.yaml
+    change-log: classpath:db/changelog/master.yaml
     url: jdbc:postgresql://localhost:5432/postgres
-    password: postgres
-    user: admin
+    user: postgres
+    password: admin
     enabled: true
 
   jpa:

@@ -31,8 +31,8 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
 
-    testImplementation("org.testcontainers:postgresql:1.19.1")
-    testImplementation("org.testcontainers:testcontainers:1.16.0")
+    testImplementation("org.testcontainers:postgresql")
+    testImplementation("org.testcontainers:testcontainers")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     implementation(group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version = "2.1.0")

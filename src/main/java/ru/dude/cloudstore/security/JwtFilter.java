@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,11 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-    String secret = "tmNDKSlBzap3CxsSg0yYffBHF0t8CgnwxZiqI+WBUBPc0kineRBj8jFLI08hNCCj0MmnZq7hIhZaUCjd5Zr0QkjkMKooiOIOIOIKLK";
+    @Value("${app.web.security.public}")
+    public String[] PUBLIC_URIS;
+
+    @Value("${app.secret-key}")
+    private String secretKey;
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
     @Override
@@ -68,7 +73,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
     private boolean isPublicUri(String requestURI) {
-        for (String publicUri : SecurityConfig.PUBLIC_URIS) {
+        for (String publicUri : PUBLIC_URIS) {
             if (antPathMatcher.match(publicUri, requestURI))
                 return true;
         }
@@ -76,7 +81,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     public boolean validateJwt(String jwt) {
-        Jwts.parser().setSigningKey(secret).parseClaimsJws(jwt);
+        Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwt);
         return true;
     }
 
@@ -87,7 +92,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     public String getUsername(String jwt) {
         Claims claims = Jwts.parser()
-                .setSigningKey(secret)
+                .setSigningKey(secretKey)
                 .parseClaimsJws(jwt)
                 .getBody();
         return claims.getSubject();

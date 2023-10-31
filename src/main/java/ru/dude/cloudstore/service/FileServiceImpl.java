@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.dude.cloudstore.dto.FileRenameRequest;
 import ru.dude.cloudstore.dto.FileRequest;
 import ru.dude.cloudstore.dto.FileUploadRequest;
-import ru.dude.cloudstore.exception.SuccessMessage;
 import ru.dude.cloudstore.model.FileResponse;
 import ru.dude.cloudstore.repository.FileSystemStorage;
 
@@ -19,7 +18,6 @@ import java.util.List;
 @AllArgsConstructor
 public class FileServiceImpl implements FileService<FileResponse, FileRequest,FileRenameRequest, FileUploadRequest> {
 
-    private final SuccessMessage successMessage;
     private final FileSystemStorage fileSystemStorage;
 
     @Override
@@ -35,21 +33,19 @@ public class FileServiceImpl implements FileService<FileResponse, FileRequest,Fi
     }
 
     @Override
-    public String deleteFile(FileRequest fileRequest) throws RuntimeException, IOException {
+    public void deleteFile(FileRequest fileRequest) throws RuntimeException, IOException {
         final var currentUsername = getCurrentUserName();
         fileSystemStorage.delete(currentUsername, fileRequest.getName());
-        return successMessage.getDeleteMessage();
     }
 
 
     @Override
-    public String renameFile(FileRenameRequest fileRenameRequest) throws RuntimeException, IOException {
+    public void renameFile(FileRenameRequest fileRenameRequest) throws RuntimeException, IOException {
         final var currentUsername = getCurrentUserName();
         fileSystemStorage.updateFile(
                 currentUsername,
                 fileRenameRequest.getToUpdateFilename(),
                 fileRenameRequest.getNewFilename());
-        return successMessage.getRenameMessage();
     }
 
     @Override

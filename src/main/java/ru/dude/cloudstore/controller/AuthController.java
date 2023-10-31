@@ -11,12 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.dude.cloudstore.dto.AuthRequest;
-import ru.dude.cloudstore.dto.ErrorResponse;
 import ru.dude.cloudstore.model.TokenResponse;
 import ru.dude.cloudstore.service.AuthWithJWTService;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
 @RestController
 @AllArgsConstructor
@@ -30,14 +26,14 @@ public class AuthController {
             content = @Content(mediaType = "application/json",
                     schema = @Schema(ref = "#/components/schemas/Login")))
 
-            @ApiResponse(responseCode = "400", description = "Bad credentials",
+    @ApiResponse(responseCode = "400", description = "Bad credentials",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(ref = "#/components/schemas/Error")))
 
-            @PostMapping("/login")
-            public TokenResponse login(@RequestBody @Valid AuthRequest authRequest) throws Exception {
-            return authWithJWTService.login(authRequest);
-            }
+    @PostMapping("/login")
+    public TokenResponse login(@RequestBody @Valid AuthRequest authRequest) {
+        return authWithJWTService.login(authRequest);
+    }
 
     @Operation(description = "Logout")
     @ApiResponse(responseCode = "200", description = "Success logout",

@@ -2,19 +2,14 @@ package ru.dude.cloudstore.config;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -30,21 +25,10 @@ import ru.dude.cloudstore.security.JwtFilter;
 public class SecurityConfig implements WebMvcConfigurer {
 
     private final JwtFilter jwtFilter;
-    public static final String[] PUBLIC_URIS = new String[]{
-            "/",
-            "/index.html",
-            "/download/**",
-            "/auth.html",
-            "/home.html",
-            "/templates/**",
-            "/css/**",
-            "/js/**",
-            "/images/**",
-            "/favicon.ico",
-            "/login",
-            "/openapi.yaml",
-            "/swagger-ui/**",
-            "/v3/api-docs/**"};
+
+
+    @Value("${app.web.security.public}")
+    public String[] PUBLIC_URIS;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -52,7 +36,7 @@ public class SecurityConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain filterChain( HttpSecurity http) throws Exception {
         return http
                 .httpBasic().disable()
                 .formLogin().disable()
@@ -65,15 +49,6 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        UserDetails userDetails = User.withUsername("user")
-                .password(encoder.encode("test"))
-                .build();
-        return new InMemoryUserDetailsManager(userDetails);
     }
 
     @Override
