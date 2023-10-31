@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.dude.cloudstore.config.SecurityConfig;
 import ru.dude.cloudstore.dto.ErrorResponse;
 import ru.dude.cloudstore.dto.HeaderNameHolder;
 import ru.dude.cloudstore.entities.UserAuthority;

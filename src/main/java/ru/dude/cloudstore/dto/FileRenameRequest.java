@@ -1,16 +1,25 @@
 package ru.dude.cloudstore.dto;
 
 import jakarta.validation.constraints.NotEmpty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class FileRenameRequest {
-    @NotEmpty
-    private String newFilename;
-    @NotEmpty
-    private String toUpdateFilename;
+
+public record FileRenameRequest(
+        @NotEmpty
+        String newFilename,
+        @NotEmpty
+        String toUpdateFilename
+) {
+
+    public FileRenameRequest() {
+        this("","");
+    }
+
+    public FileRenameRequest withNewFilename(String newFilename) {
+        return new FileRenameRequest(newFilename, this.toUpdateFilename);
+    }
+
+    public FileRenameRequest withToUpdateFilename(String toUpdateFilename) {
+        return new FileRenameRequest(this.newFilename, toUpdateFilename);
+    }
+
 }

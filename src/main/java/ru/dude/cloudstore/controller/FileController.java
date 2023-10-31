@@ -85,8 +85,8 @@ public class FileController {
             @RequestBody @Valid @NotNull FileRequest fileRequest
     ) throws IOException {
         final var fileRenameRequest = new FileRenameRequest();
-        fileRenameRequest.setNewFilename(fileRequest.getName());
-        fileRenameRequest.setToUpdateFilename(filename);
+        fileRenameRequest.withNewFilename(fileRequest.name());
+        fileRenameRequest.withToUpdateFilename(filename);
         fileServiceImpl.renameFile(fileRenameRequest);
     }
 

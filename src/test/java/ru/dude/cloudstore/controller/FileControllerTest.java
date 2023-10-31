@@ -85,8 +85,8 @@ public class FileControllerTest {
     public void handleFileRenameSuccess() throws Exception {
         final var renamedFileRequest = new FileRequest(TEST_FILE_RENAMED_NAME);
         final var fileRenameRequest = new FileRenameRequest();
-        fileRenameRequest.setToUpdateFilename(TEST_FILE_NAME);
-        fileRenameRequest.setNewFilename(renamedFileRequest.getName());
+        fileRenameRequest.withToUpdateFilename(TEST_FILE_NAME);
+        fileRenameRequest.withNewFilename(renamedFileRequest.name());
         final var resultActions = mockMvc.perform(put("/file")
                 .param("filename", TEST_FILE_NAME)
                 .contentType(MediaType.APPLICATION_JSON)

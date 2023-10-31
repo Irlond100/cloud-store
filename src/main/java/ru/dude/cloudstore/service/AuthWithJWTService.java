@@ -32,9 +32,9 @@ public class AuthWithJWTService {
     public TokenResponse login(AuthRequest authRequest) throws RuntimeException {
         User user;
         try {
-            user = loadUserByUsername(getUsernameEncoded(authRequest.getUsername()));
+            user = loadUserByUsername(getUsernameEncoded(authRequest.username()));
             final var userEncodedPassword = user.getPassword();
-            final var authRequestPassword = authRequest.getPassword();
+            final var authRequestPassword = authRequest.password();
             if (passwordEncoder.matches(authRequestPassword, userEncodedPassword)) {
                 final var jwt = generateJwt(user);
                 return new TokenResponse(jwt);

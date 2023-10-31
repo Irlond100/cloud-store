@@ -1,13 +1,9 @@
 package ru.dude.cloudstore.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+public record FileResponse(
+        String filename,
+        Long size,
+        String date
+) {
 
-@Data
-@AllArgsConstructor
-
-public class FileResponse {
-    private String filename;
-    private Long size;
-    private String date;
 }
