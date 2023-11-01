@@ -8,7 +8,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,19 +33,39 @@ public class FileController {
     private final FileServiceImpl fileServiceImpl;
     private final Map<String, Resource> oneTimeLinks = new HashMap<>();
 
+//    @Operation(description = "Download file from cloud")
+//    @CommonApiResponsesDownloadFile
+//    @AuthTokenParameter
+//    @GetMapping("/file")
+//    public ResponseEntity<String> getFileLinkKey(
+//            @Parameter(description = "Name of the file to generate one-time download link for")
+//            @RequestParam @Valid @NotEmpty @NotBlank String filename) throws IOException {
+//        final var fileRequest = new FileRequest(filename);
+//        final var fileResource = fileServiceImpl.getFileResource(fileRequest);
+//        String linkKey = generateRandomLinkKey();
+//        oneTimeLinks.put(linkKey, fileResource);
+//        return ResponseEntity.ok().body(linkKey);
+//    }
+
+
     @Operation(description = "Download file from cloud")
     @CommonApiResponsesDownloadFile
     @AuthTokenParameter
     @GetMapping("/file")
-    public ResponseEntity<String> getFileLinkKey(
+    public ResponseEntity<Resource> getFile(
             @Parameter(description = "Name of the file to generate one-time download link for")
             @RequestParam @Valid @NotEmpty @NotBlank String filename) throws IOException {
         final var fileRequest = new FileRequest(filename);
         final var fileResource = fileServiceImpl.getFileResource(fileRequest);
-        String linkKey = generateRandomLinkKey();
-        oneTimeLinks.put(linkKey, fileResource);
-        return ResponseEntity.ok().body(linkKey);
+        Resource resource = new ByteArrayResource(fileResource.getInputStream().readAllBytes());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(resource);
     }
+
 
     @Operation(description = "Deletes a file")
     @CommonApiResponsesDelete
