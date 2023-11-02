@@ -2,7 +2,6 @@ package ru.dude.cloudstore.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 
-
 public record FileRenameRequest(
         @NotEmpty
         String newFilename,
@@ -11,7 +10,7 @@ public record FileRenameRequest(
 ) {
 
     public FileRenameRequest() {
-        this("","");
+        this("", "");
     }
 
     public FileRenameRequest withNewFilename(String newFilename) {

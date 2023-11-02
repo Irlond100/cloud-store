@@ -1,8 +1,7 @@
 package ru.dude.cloudstore.dto;
 
 public record ErrorResponse(
-        String message,
-        long id
+        String message
 ) {
 
 }

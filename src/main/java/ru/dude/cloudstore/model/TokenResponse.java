@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.dude.cloudstore.dto.HeaderNameHolder;
 
 public record TokenResponse(
-        @JsonProperty(HeaderNameHolder.TOKEN_HEADER_NAME)
+        @JsonProperty("auth-token")
         String authToken
 ) {
 }

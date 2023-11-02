@@ -13,10 +13,9 @@ import ru.dude.cloudstore.repository.FileSystemStorage;
 import java.io.IOException;
 import java.util.List;
 
-
 @Service
 @AllArgsConstructor
-public class FileServiceImpl implements FileService<FileResponse, FileRequest,FileRenameRequest, FileUploadRequest> {
+public class FileServiceImpl implements FileService<FileResponse, FileRequest, FileRenameRequest, FileUploadRequest> {
 
     private final FileSystemStorage fileSystemStorage;
 
@@ -38,7 +37,6 @@ public class FileServiceImpl implements FileService<FileResponse, FileRequest,Fi
         fileSystemStorage.delete(currentUsername, fileRequest.name());
     }
 
-
     @Override
     public void renameFile(FileRenameRequest fileRenameRequest) throws RuntimeException, IOException {
         final var currentUsername = getCurrentUserName();
@@ -51,12 +49,12 @@ public class FileServiceImpl implements FileService<FileResponse, FileRequest,Fi
     @Override
     public Resource getFileResource(FileRequest fileRequest) throws IOException {
         final var currentUsername = getCurrentUserName();
-            return fileSystemStorage.loadAsResource(currentUsername, fileRequest.name());
+        return fileSystemStorage.loadAsResource(currentUsername, fileRequest.name());
     }
 
     private String getCurrentUserName() {
         final String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        if (username == null || username.isEmpty()) {
+        if (username.isBlank() || username.isEmpty()) {
             throw new RuntimeException();
         }
         return username;

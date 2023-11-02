@@ -6,11 +6,10 @@ import jakarta.validation.constraints.Size;
 
 public record AuthRequest (
         @NotEmpty
-        @JsonProperty(HeaderNameHolder.USER_HEADER_NAME)
+        @JsonProperty("login")
         String username,
         @Size(min = 4, max = 64, message = "password:  must be at least 4 characters and contain at least one digit and one uppercase letter")
         @NotEmpty
         String password
 ) {
-
 }

@@ -17,7 +17,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ru.dude.cloudstore.security.JwtFilter;
 
-
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -26,17 +25,16 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     private final JwtFilter jwtFilter;
 
-
     @Value("${app.web.security.public}")
     public String[] PUBLIC_URIS;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12);
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
-    SecurityFilterChain filterChain( HttpSecurity http) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .httpBasic().disable()
                 .formLogin().disable()

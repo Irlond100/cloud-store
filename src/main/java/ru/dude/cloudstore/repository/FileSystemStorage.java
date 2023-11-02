@@ -5,16 +5,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import ru.dude.cloudstore.model.FileResponse;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.io.File;
 
 
 @Slf4j
@@ -49,7 +48,6 @@ public class FileSystemStorage implements FileStore {
                 .toList();
     }
 
-
     @Override
     public void store(String username, String filename, byte[] bytes) throws IOException {
         if (filename != null && bytes != null) {
@@ -83,6 +81,7 @@ public class FileSystemStorage implements FileStore {
                 toUpdateFilename,
                 newFileName);
     }
+
     @Override
     public Resource loadAsResource(String username, String filename) throws IOException {
         final var filePath = getFilePath(username, filename);

@@ -1,7 +1,6 @@
 package ru.dude.cloudstore.service;
 
 import org.springframework.core.io.Resource;
-import ru.dude.cloudstore.dto.FileUploadRequest;
 
 import java.io.IOException;
 import java.util.List;

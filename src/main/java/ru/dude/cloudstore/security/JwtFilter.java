@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
+    private final ObjectMapper objectMapper;
+
     @Value("${app.web.security.public}")
     public String[] PUBLIC_URIS;
 
@@ -40,7 +43,8 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     public void doFilterInternal(HttpServletRequest httpServletRequest,
                                  @NonNull HttpServletResponse httpServletResponse,
-                                 @NonNull FilterChain filterChain) throws ServletException, IOException {
+                                 @NonNull FilterChain filterChain
+    ) throws ServletException, IOException {
         if (!isPublicUri(httpServletRequest.getRequestURI())) {
             try {
                 String jwt = getJwt(httpServletRequest);
@@ -51,10 +55,9 @@ public class JwtFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (Exception e) {
-                final var objectMapper = new ObjectMapper();
                 httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                httpServletResponse.setContentType("application/json");
-                httpServletResponse.getWriter().write(objectMapper.writeValueAsString(new ErrorResponse(e.getMessage(), 1L)));
+                httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                httpServletResponse.getWriter().write(objectMapper.writeValueAsString(new ErrorResponse(e.getMessage())));
                 return;
             }
         }
@@ -69,7 +72,6 @@ public class JwtFilter extends OncePerRequestFilter {
             throw new SignatureException("wrong jwt is passed");
         }
     }
-
 
     private boolean isPublicUri(String requestURI) {
         for (String publicUri : PUBLIC_URIS) {

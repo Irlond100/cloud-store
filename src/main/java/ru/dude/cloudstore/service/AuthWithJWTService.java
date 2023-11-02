@@ -4,12 +4,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.api.ErrorMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.dude.cloudstore.dto.AuthRequest;
@@ -45,7 +43,6 @@ public class AuthWithJWTService {
             throw new BadCredentialsException("bad");
         }
     }
-
 
     private String getUsernameEncoded(String originalString) {
         return originalString;
